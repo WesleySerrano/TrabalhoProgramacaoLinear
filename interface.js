@@ -1,4 +1,5 @@
 var boxCounter=0;
+var comboBoxCounter = 0;
 var numberOfVariables;
 var numberOfRestrictions;
 
@@ -10,7 +11,7 @@ function isInteger(n)
 function makeComboBox()
 {
   var inputString="";
-  inputString+="<select>";
+  inputString+="<select id=restriction"+(++comboBoxCounter)+">";
   inputString+="<option value=\"=\"> = </option>";
   inputString+="<option value=\">=\"> >= </option>";
   inputString+="<option value=\"<=\"> <= </option>";
@@ -30,7 +31,7 @@ function beginEquation()
 {
   var variableCounter = 1;
   boxCounter=1;
-  numberOfVariables = document.getElementById("inputBox"+(boxCounter-1)).value;
+  numberOfVariables = Number(document.getElementById("inputBox"+(boxCounter-1)).value);
   document.getElementById("problem").innerHTML=" ";
   document.getElementById("restrictions").innerHTML=" ";
 
@@ -58,7 +59,7 @@ function beginEquation()
 
 function beginRestrictions()
 {
-  numberOfRestrictions = document.getElementById("inputBox"+(boxCounter-1)).value;
+  numberOfRestrictions = Number(document.getElementById("inputBox"+(boxCounter-1)).value);
 
   if(isInteger(numberOfRestrictions))
   {
@@ -89,7 +90,7 @@ function beginRestrictions()
     }
 
 	inputString+="</table>"
-	inputString+="<button type=\"button\" onclick=\"dataShow()\">Next Step</button>";
+	inputString+="<button type=\"button\" onclick=\"makeMatrix()\">Next Step</button>";
 	document.getElementById("restrictions").innerHTML=inputString;
   }
   else
@@ -98,18 +99,91 @@ function beginRestrictions()
   }
 }
 
-function dataShow()
+function makeMatrix()
 {
-    var text = "<table>";
+    var A = [];
+	var b = [];
+    var numberOfSlackVariables = 0;
+    var numberOfArtificialVariables = 0;
 	
 	for(var i = 1; i <= numberOfRestrictions; i++)
 	{
-	   text+= "<tr>"
+	   var line = [];
+       var restrictionBox = document.getElementById("restriction"+i);
+	   var restriction = restrictionBox.options[restrictionBox.selectedIndex].text;
+	   var bValue =  document.getElementById("restrictionRHSBox"+i).value;
+	   
 	   for(var j = 1; j <= numberOfVariables; j++)
 	   {
 	     var boxID = "restrictionBox"+i+j;
+		 var element = Number(document.getElementById(boxID).value);
+	      line.push(element);
+	   }
+	  for(var k = 1;k <= numberOfSlackVariables;k++)
+	  {
+		 line.push(0);
+	  }
+	   
+	  if(restriction === "<=")
+	  {
+		 line.push(1);
+		 numberOfSlackVariables++;
+	  }
+	  else if(restriction === ">=")
+	  {
+		 line.push(-1);
+		 numberOfSlackVariables++;
+	  }
+	  A.push(line);
+	  b.push(bValue);
+	} 
+
+    for(var i = 0; i < A.length; i++)	
+    {
+	   for(var j=numberOfVariables+numberOfSlackVariables; j > A[i].length;)
+	   {
+	      A[i].push(0);
+	   }
+	}
+
+	for(var i=0; i < numberOfRestrictions; i++)
+	{
+       var restrictionBox = document.getElementById("restriction"+(i+1));
+	   var restriction = restrictionBox.options[restrictionBox.selectedIndex].text;
+	
+	   if(restriction === ">=")
+	   {
+	       for(var j=1; j <= numberOfArtificialVariables;j++)
+		   {
+		      A[i].push(0);
+		   }
+	      A[i].push(1);
+		  numberOfArtificialVariables++;
+	   }
+	}
+
+    for(var i = 0; i < A.length; i++)	
+    {
+	   for(var j=numberOfVariables+numberOfSlackVariables+numberOfArtificialVariables; j > A[i].length;)
+	   {
+	      A[i].push(0);
+	   }
+	}
+	
+    dataShow(A,b);	
+}
+
+function dataShow(A,b)
+{
+    var text = "<table>";
+	
+	for(var i = 0; i < A.length; i++)
+	{
+	   text+= "<tr>"
+	   for(var j = 0; j < A[i].length; j++)
+	   {
 	     text+="<td>";
-		 text+= document.getElementById(boxID).value;
+		 text+= A[i][j];
 	     text+="</td>";
 	   }
 	   text+="</tr>";

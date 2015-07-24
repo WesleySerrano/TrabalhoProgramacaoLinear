@@ -2,6 +2,7 @@ var boxCounter=0;
 var comboBoxCounter = 0;
 var numberOfVariables;
 var numberOfRestrictions;
+var iterationCounter = 0;
 
 function isInteger(n)
 {
@@ -103,6 +104,7 @@ function makeMatrix()
 {
     var A = [];
 	var b = [];
+	var costs = [];
     var numberOfSlackVariables = 0;
     var numberOfArtificialVariables = 0;
 	
@@ -111,7 +113,7 @@ function makeMatrix()
 	   var line = [];
        var restrictionBox = document.getElementById("restriction"+i);
 	   var restriction = restrictionBox.options[restrictionBox.selectedIndex].text;
-	   var bValue =  document.getElementById("restrictionRHSBox"+i).value;
+	   var bValue =  Number(document.getElementById("restrictionRHSBox"+i).value);
 	   
 	   for(var j = 1; j <= numberOfVariables; j++)
 	   {
@@ -170,12 +172,71 @@ function makeMatrix()
 	   }
 	}
 	
-    dataShow(A,b);	
+	var matrix = [[]];
+	for(var i=1; i <= numberOfVariables; i++)
+	{
+	   matrix[0].push(-Number(document.getElementById("variableBox"+i).value));
+	}
+		
+	for(var i = 1; i <= numberOfSlackVariables; i++)
+	{
+	  matrix[0].push(0);
+	}
+	matrix[0].push(0);
+	
+	for(var i = 0; i < A.length; i++)
+	{
+	   matrix.push(A[i]);
+	   matrix[i+1].push(b[i]);
+	}	
+	
+    dataShow(A,b,numberOfSlackVariables,numberOfArtificialVariables);		
 }
 
-function dataShow(A,b)
+function dataShow(A,b,numberOfSlackVariables,numberOfArtificialVariables)
 {
     var text = "<table>";
+	
+	if(numberOfArtificialVariables>0)
+	{ 
+	    text+="<tr>";
+	    for(var j = 0;j < numberOfVariables+numberOfSlackVariables; j++)
+		{
+		  text += "<td>";
+		  text += 0;
+		  text += "</td>";
+		}
+		
+	    for(var j = 0;j < numberOfArtificialVariables; j++)
+		{
+		  text += "<td>";
+		  text += -1;
+		  text += "</td>";
+		}
+	}
+	
+	else
+	{
+	    text+="<tr>";
+	    for(var j = 1;j <= numberOfVariables; j++)
+		{
+		  text += "<td>";
+		  text += -Number(document.getElementById("variableBox"+j).value);
+		  text += "</td>";
+		}
+		
+	    for(var j = 1;j <= numberOfSlackVariables; j++)
+		{
+		  text += "<td>";
+		  text += 0;
+		  text += "</td>";
+		}
+	}
+	 
+	text += "<td>";
+	text += 0;
+	text += "</td>";
+    text+="</tr>";
 	
 	for(var i = 0; i < A.length; i++)
 	{
@@ -186,6 +247,9 @@ function dataShow(A,b)
 		 text+= A[i][j];
 	     text+="</td>";
 	   }
+	     text+="<td>";
+		 text+= b[i];
+	     text+="</td>";
 	   text+="</tr>";
 	}
 	

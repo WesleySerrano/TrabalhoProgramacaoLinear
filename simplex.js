@@ -1,18 +1,18 @@
 function findPivotColumn(matrix)
 {
    var  pivotColumn = 0;
-   var min = matrix[0][pivotColumn];
+   var max = matrix[0][pivotColumn];
    
    for(var i = 1; i < matrix.length-1; i++)
    {
-      if(matrix[0][i] < min)
+      if(matrix[0][i] > max && matrix[0][i] > 0)
 	  {
-	     min = matrix[0][i];
+	     max = matrix[0][i];
 		 pivotColumn = i;
 	  }
    }
    
-   if(min >= 0)
+   if(max <= 0)
    {
       pivotColumn = -1;
    }
@@ -27,10 +27,12 @@ function findPivotRow(matrix,pivotColumn)
   
    for(var i = 1; i < matrix.length; i++)
    {
-     var lastColumnIndex = matrix.length-1;
+     var lastColumnIndex = matrix[0].length-1;
      if(matrix[i][pivotColumn] != 0)
 	 {
-        var reason = matrix[i][lastColumnIndex]/A[i][pivotColumn];
+	     var b = matrix[i][lastColumnIndex];
+	     var y = matrix[i][pivotColumn];
+        var reason = b/parseFloat(y);
 		if((reason > 0 && reason < minReason) || minReason < 0)
 		{
 		   minReason = reason;
@@ -49,20 +51,21 @@ function findPivotRow(matrix,pivotColumn)
 
 function pivot(matrix,pivotColumn, pivotRow)
 {
-   var pivot = A[pivotRow][pivotColumn];
+   var pivot = matrix[pivotRow][pivotColumn];
    
    for(var i = 0; i < matrix[0].length; i++)
    {
-       A[pivotRow][j] /= pivot;
+       matrix[pivotRow][i] /= parseFloat(pivot);
    }
    
-   for(var i = 0; i < A.length; i++)
+   for(var i = 0; i < matrix.length; i++)
    {
       if(i != pivotRow)
 	  {		
-		for(var j = 0; j < costs.length; j++)
+        var multiplier = matrix[i][pivotColumn];
+		for(var j = 0; j < matrix[0].length; j++)
 		{
-		   A[i][j] -= multiplier*A[pivotRow][j];
+		   matrix[i][j] -= multiplier*matrix[pivotRow][j];
 		}
 	  }
    }
@@ -72,8 +75,20 @@ function pivot(matrix,pivotColumn, pivotRow)
 
 function solve(matrix)
 {
+   var basicVariables = [];
+   var variablesValues = [0];
+   
+   for (var i = 0; i < matrix[0].length-1; i++)
+   {
+      if(matrix[0][i] == 0) basicVariables.push(i);
+	  variablesValues.push(0);
+   }
+   
    while(42)
    {
+	 showMatrix(matrix);
+	 showBasicVariables(basicVariables);
+	 
      var pivotColumn = findPivotColumn(matrix);   
 
      if(pivotColumn < 0)
@@ -82,7 +97,7 @@ function solve(matrix)
 	     break;
 	 }
 
-     var pivotRow = 	findPivotRow(matrix); 
+     var pivotRow = 	findPivotRow(matrix,pivotColumn); 
 	 
 	 if(pivotRow < 0)
 	 {
@@ -91,7 +106,16 @@ function solve(matrix)
 	 }
 	 
 	 matrix = pivot(matrix,pivotColumn,pivotRow);
-	 
-	 printIteration(matrix);
+	 basicVariables[pivotRow-1] = pivotColumn;
    }
+   
+   var lastColumnIndex = matrix[0].length-1;
+   for(var i = 0; i < basicVariables.length; i++)
+   {
+     var variableIndex = basicVariables[i];
+	 
+	 variablesValues[variableIndex] = matrix[i+1][lastColumnIndex];
+   }
+   
+   showSolution(variablesValues);
 }

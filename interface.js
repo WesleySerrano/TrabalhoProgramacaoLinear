@@ -38,7 +38,7 @@ function beginEquation()
 
   if(isInteger(numberOfVariables))
   {
-	  var inputString = "Z = ";
+	  var inputString = "Min Z = ";
 	  var i;
 	  
 	  for(i=1;i<=numberOfVariables;i++)
@@ -102,6 +102,7 @@ function beginRestrictions()
 
 function makeMatrix()
 {
+	document.getElementById("dataShow").innerHTML = "";
     var A = [];
 	var b = [];
 	var costs = [];
@@ -190,8 +191,54 @@ function makeMatrix()
 	   matrix[i+1].push(b[i]);
 	}	
 	
-    dataShow(A,b,numberOfSlackVariables,numberOfArtificialVariables);		
+	solve(matrix,numberOfSlackVariables);
 }
+
+function showMatrix(matrix)
+{
+  var text = "<table>";
+  
+  for(var i = 0; i< matrix.length; i++)
+  {
+     text += "<tr>";
+	 
+	 for(var j = 0; j < matrix[i].length; j++)
+	 {
+		  text += "<td>";
+		  text += matrix[i][j];
+		  text += "</td>";
+	 }
+	 
+     text += "</tr>";
+  }
+  
+  text += "</table>";
+	document.getElementById("dataShow").innerHTML+=text;
+}
+
+
+function showBasicVariables(basicVariables)
+{
+   var text = "Variaveis basicas:"
+   for(var i = 0; i< basicVariables.length; i++)
+   {
+      text +=" X"+(basicVariables[i]+1);
+   }
+   text += "<br><br>";
+	document.getElementById("dataShow").innerHTML+=text;
+}
+
+function showSolution(variablesValues)
+{
+   var text = "Solucao:"
+   for(var i = 0; i< variablesValues.length; i++)
+   {
+      text +=" X"+(i+1) + " = " + variablesValues[i];
+   }
+   text += "<br><br>";
+	document.getElementById("dataShow").innerHTML+=text;
+}
+
 
 function dataShow(A,b,numberOfSlackVariables,numberOfArtificialVariables)
 {

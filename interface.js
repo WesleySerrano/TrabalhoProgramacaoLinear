@@ -35,6 +35,7 @@ function beginEquation()
   numberOfVariables = Number(document.getElementById("inputBox"+(boxCounter-1)).value);
   document.getElementById("problem").innerHTML=" ";
   document.getElementById("restrictions").innerHTML=" ";
+  document.getElementById("dataShow").innerHTML="";
 
   if(isInteger(numberOfVariables))
   {
@@ -179,7 +180,7 @@ function makeMatrix()
 	   matrix[0].push(-Number(document.getElementById("variableBox"+i).value));
 	}
 		
-	for(var i = 1; i <= numberOfSlackVariables; i++)
+	for(var i = 1; i <= numberOfSlackVariables + numberOfArtificialVariables; i++)
 	{
 	  matrix[0].push(0);
 	}
@@ -191,7 +192,25 @@ function makeMatrix()
 	   matrix[i+1].push(b[i]);
 	}	
 	
-	solve(matrix,numberOfSlackVariables);
+	if(numberOfArtificialVariables > 0) 
+	{	   
+	   var firstLine = [];
+	
+	   for(var i = 0; i < matrix[0].length; i++)
+	   {
+	      firstLine.push(matrix[0][i]);
+	   
+	      if(i < numberOfVariables+numberOfSlackVariables) matrix[0][i]=0;
+		  else if(i!= matrix[0].length-1) matrix[0][i] = -1;
+		  else matrix[0][i] = 0;
+	   }
+	   
+	   matrix = solvePhaseOne(matrix);
+	   for(var i = 0; i < matrix[0].length; i++) matrix[0][i] = firstLine[i];
+	   matrix = correctMatrix(matrix,numberOfVariables,numberOfSlackVariables);
+	}
+	
+	solve(matrix);
 }
 
 function showMatrix(matrix)
@@ -212,15 +231,15 @@ function showMatrix(matrix)
      text += "</tr>";
   }
   
-  text += "</table>";
-	document.getElementById("dataShow").innerHTML+=text;
+  text += "</table><br>";
+  document.getElementById("dataShow").innerHTML+=text;
 }
 
 
 function showBasicVariables(basicVariables)
 {
    var text = "Variaveis basicas:"
-   for(var i = 0; i< basicVariables.length; i++)
+   for(var i = 0; i < basicVariables.length; i++)
    {
       text +=" X"+(basicVariables[i]+1);
    }

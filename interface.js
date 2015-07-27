@@ -210,17 +210,42 @@ function makeMatrix()
 	   matrix = correctMatrix(matrix,numberOfVariables,numberOfSlackVariables);
 	}
 	
-	solve(matrix);
+	solve(matrix,false);
 }
 
-function showMatrix(matrix)
+function showMatrix(matrix,basicVariables)
 {
-  var text = "<table>";
+  var text = "<table border = 1>";
+  
+  text+= "<tr>";
+  text+= "<td></td>";
+  for(var i = 1; i < matrix[0].length; i++)
+  {
+		  text += "<td>";
+		  text += "X"+(i);
+		  text += "</td>";
+  }
+  text+= "<td>RHS</td>";
+  text+= "</tr>";
   
   for(var i = 0; i< matrix.length; i++)
   {
      text += "<tr>";
 	 
+	 if(i > 0)
+	 {
+	  text += "<td>";
+	  text += "X"+(basicVariables[i-1]+1);
+	  text += "</td>";
+	  }
+	  else
+	 {
+	  text += "<td>";
+	  text += "Z";
+	  text += "</td>";
+	  }
+	  
+	  
 	 for(var j = 0; j < matrix[i].length; j++)
 	 {
 		  text += "<td>";
@@ -236,9 +261,11 @@ function showMatrix(matrix)
 }
 
 
-function showBasicVariables(basicVariables)
+function showBasicVariables(basicVariables,phaseOne)
 {
    var text = "Variaveis basicas:"
+   if(phaseOne) text = "Base Otima para a Fase I:";
+   
    for(var i = 0; i < basicVariables.length; i++)
    {
       text +=" X"+(basicVariables[i]+1);

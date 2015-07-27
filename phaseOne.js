@@ -27,7 +27,7 @@ function findRowsToAdd(matrix,artificialColumns)
    return rowsToAdd;
 }
 
-function removeArtificialVariables(matrix,rowsToAdd)
+function removeArtificialVariablesFromBase(matrix,rowsToAdd)
 {
   for(var i = 0; i< rowsToAdd.length; i++)
   {
@@ -39,13 +39,13 @@ function removeArtificialVariables(matrix,rowsToAdd)
 	 }
   }
 
-  showMatrix(matrix);
+  showMatrix(matrix,basicVariables);
   return matrix;
 }
 
 function findRowWithOne(matrix,column)
 {
-   for(var i = 0; i < matrix.length; i++)
+   for(var i = 1	; i < matrix.length; i++)
    {
        if(matrix[i][column] == 1) return i;
    }
@@ -72,7 +72,7 @@ function removeArtificialColumns(matrix,numberOfVariables,numberOfSlackVariables
 function correctMatrix(matrix,numberOfVariables,numberOfSlackVariables)
 {
    matrix = removeArtificialColumns(matrix,numberOfVariables,numberOfSlackVariables);
-   showMatrix(matrix);
+   showMatrix(matrix,basicVariables);
 
    for(var i = 0; i < basicVariables.length; i++)
    {
@@ -87,18 +87,21 @@ function correctMatrix(matrix,numberOfVariables,numberOfSlackVariables)
 	  }
    }
    
-   showMatrix(matrix);
+   showMatrix(matrix,basicVariables);
    return matrix;
 }
 
 function solvePhaseOne(matrix)
-{
-   showMatrix(matrix);
+{  
+   document.getElementById("dataShow").innerHTML+="Inicio da Fase I";
+   basicVariables = findBasicVariables(matrix,true);
+   showMatrix(matrix,basicVariables);
    
    var artificialColumns = findArtificialColumns(matrix);
    var rowsToAdd = findRowsToAdd(matrix,artificialColumns);
-   matrix = removeArtificialVariables(matrix,rowsToAdd);
-   matrix = solve(matrix);  
+   matrix = removeArtificialVariablesFromBase(matrix,rowsToAdd);
+   matrix = solve(matrix,true);  
  
+   document.getElementById("dataShow").innerHTML+="Inicio da Fase II";
    return matrix;
 }

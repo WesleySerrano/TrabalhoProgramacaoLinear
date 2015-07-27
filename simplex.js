@@ -111,6 +111,7 @@ function solve(matrix,phaseOne)
    basicVariables = findBasicVariables(matrix,false);
    var variablesValues = [];
    var justGotIn = 0;
+   var iteration = 1;
    
    for (var i = 0; i < matrix[0].length-1; i++)
    {
@@ -119,6 +120,7 @@ function solve(matrix,phaseOne)
    
    while(42)
    {
+   	 document.getElementById("dataShow").innerHTML+="Iteracao "+(iteration++);
 	 showMatrix(matrix,basicVariables);
 	 
      var pivotColumn = findPivotColumn(matrix);   

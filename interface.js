@@ -25,7 +25,7 @@ function initialize()
 {
 	var inputString = "Numero de variaveis: <input type=\"text\" id=\"inputBox"+boxCounter+"\" value=\"\" />";
 	inputString +=" <button type=\"button\" onclick=\"beginEquation()\">Next Step</button>";
-	document.getElementById("init").innerHTML+=inputString;
+	document.getElementById("init").innerHTML=inputString;
 }
 
 function beginEquation()
@@ -33,13 +33,17 @@ function beginEquation()
   var variableCounter = 1;
   boxCounter=1;
   numberOfVariables = Number(document.getElementById("inputBox"+(boxCounter-1)).value);
-  document.getElementById("problem").innerHTML=" ";
-  document.getElementById("restrictions").innerHTML=" ";
+  document.getElementById("problem").innerHTML="";
+  document.getElementById("restrictions").innerHTML="";
   document.getElementById("dataShow").innerHTML="";
 
   if(isInteger(numberOfVariables))
   {
-	  var inputString = "Min Z = ";
+	  var inputString = "<select id=problemType>";
+	  inputString+="<option value=\"Min\"> Min </option>";
+	  inputString+="<option value=\"Max\"> Max </option>";
+	  inputString+="</select>";
+	  inputString += " Z = ";
 	  var i;
 	  
 	  for(i=1;i<=numberOfVariables;i++)
@@ -62,6 +66,7 @@ function beginEquation()
 function beginRestrictions()
 {
   numberOfRestrictions = Number(document.getElementById("inputBox"+(boxCounter-1)).value);
+  comboBoxCounter = 0;
 
   if(isInteger(numberOfRestrictions))
   {
@@ -113,6 +118,7 @@ function makeMatrix()
 	for(var i = 1; i <= numberOfRestrictions; i++)
 	{
 	   var line = [];
+
        var restrictionBox = document.getElementById("restriction"+i);
 	   var restriction = restrictionBox.options[restrictionBox.selectedIndex].text;
 	   var bValue =  Number(document.getElementById("restrictionRHSBox"+i).value);
@@ -175,9 +181,13 @@ function makeMatrix()
 	}
 	
 	var matrix = [[]];
+    var problemTypeBox = document.getElementById("problemType");
+    var problemType = problemTypeBox.options[problemTypeBox.selectedIndex].text;
+
 	for(var i=1; i <= numberOfVariables; i++)
 	{
-	   matrix[0].push(-Number(document.getElementById("variableBox"+i).value));
+	   if(problemType === "Min")matrix[0].push(-Number(document.getElementById("variableBox"+i).value));
+	   else if(problemType === "Max")matrix[0].push(Number(document.getElementById("variableBox"+i).value));
 	}
 		
 	for(var i = 1; i <= numberOfSlackVariables + numberOfArtificialVariables; i++)
@@ -192,6 +202,9 @@ function makeMatrix()
 	   matrix[i+1].push(b[i]);
 	}	
 	
+	document.getElementById("dataShow").innerHTML+="Numero de variaveis de folga criadas: "+numberOfSlackVariables+"<br>";
+	document.getElementById("dataShow").innerHTML+="Numero de variaveis artificiais criadas: "+numberOfArtificialVariables+"<br><br>";
+
 	if(numberOfArtificialVariables > 0) 
 	{	   
 	   var firstLine = [];

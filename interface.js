@@ -161,7 +161,7 @@ function makeMatrix()
        var restrictionBox = document.getElementById("restriction"+(i+1));
 	   var restriction = restrictionBox.options[restrictionBox.selectedIndex].text;
 	
-	   if(restriction === ">=")
+	   if(restriction === ">=" || restriction === "=")
 	   {
 	       for(var j=1; j <= numberOfArtificialVariables;j++)
 		   {

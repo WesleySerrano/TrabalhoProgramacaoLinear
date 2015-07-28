@@ -135,9 +135,13 @@ function solve(matrix,phaseOne)
 	 justGotIn = pivotRow;
 	 if(pivotRow < 0)
 	 {
+	     alert("Problema com solucao ilimitada!");
 	    //Unbounded problem
 		break;
 	 }
+	 
+	 document.getElementById("dataShow").innerHTML+= "X"+(basicVariables[pivotRow-1]+1)+" sai da base<br>"
+	 document.getElementById("dataShow").innerHTML+= "X"+(pivotColumn+1)+" entra na base<br><br>"
 	 
 	 matrix = pivot(matrix,pivotColumn,pivotRow);
 	 basicVariables[pivotRow-1] = pivotColumn;

@@ -27,7 +27,7 @@ function findRowsToAdd(matrix,artificialColumns)
    return rowsToAdd;
 }
 
-function removeArtificialVariablesFromBase(matrix,rowsToAdd)
+function correctReducedCosts(matrix,rowsToAdd)
 {
   for(var i = 0; i< rowsToAdd.length; i++)
   {
@@ -99,7 +99,7 @@ function solvePhaseOne(matrix)
    
    var artificialColumns = findArtificialColumns(matrix);
    var rowsToAdd = findRowsToAdd(matrix,artificialColumns);
-   matrix = removeArtificialVariablesFromBase(matrix,rowsToAdd);
+   matrix = correctReducedCosts(matrix,rowsToAdd);
    matrix = solve(matrix,true);  
  
    document.getElementById("dataShow").innerHTML+="Inicio da Fase II";
